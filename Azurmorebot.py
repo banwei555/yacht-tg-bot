@@ -1,4 +1,6 @@
-# ======================== 【1. 自定义配置区（只改这里！）】========================
+# 新增：导入保活函数
+from keep_alive import keep_alive
+
 ADMIN_ID = 8655639490
 
 YACHTS = [
@@ -536,6 +538,7 @@ async def main():
 
 
 if __name__ == "__main__":
+    keep_alive()
     try:
         # Windows系统异步兼容
         if os.name == 'nt':
