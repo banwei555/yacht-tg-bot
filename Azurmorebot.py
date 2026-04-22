@@ -312,74 +312,75 @@ def get_price_range(text, lang="zh"):
     return (None, None)
 
 
-def filter_by_price(yachts, min_p, max_p):
-    # -------------------------- 新增：尺寸范围筛选工具函数 --------------------------
-    def get_size_range(text, lang="zh"):
-        txt = text.lower().replace(" ", "")
-        min_s = None
-        max_s = None
-        # 中文尺寸解析
-        if lang == "zh":
-            sole = re.match(r'^(\d+)尺$', txt)
-            if sole:
-                min_s = int(sole.group(1))
-                return (min_s, max_s)
-            above = re.search(r'(\d+)尺以上', txt)
-            if above:
-                min_s = int(above.group(1))
-            below = re.search(r'(\d+)尺以下', txt)
-            if below:
-                max_s = int(below.group(1))
-            between = re.search(r'(\d+)-(\d+)尺', txt)
-            if between:
-                min_s = int(between.group(1))
-                max_s = int(between.group(2))
-        # 英文尺寸解析
-        elif lang == "en":
-            txt = txt.replace("ft", "")
-            sole = re.match(r'^(\d+)$', txt)
-            if sole:
-                min_s = int(sole.group(1))
-                return (min_s, max_s)
-            above = re.search(r'above(\d+)', txt)
-            if above:
-                min_s = int(above.group(1))
-            below = re.search(r'below(\d+)', txt)
-            if below:
-                max_s = int(below.group(1))
-            between = re.search(r'(\d+)-(\d+)', txt)
-            if between:
-                min_s = int(between.group(1))
-                max_s = int(between.group(2))
-        # 俄语尺寸解析
-        elif lang == "ru":
-            txt = txt.replace("футов", "")
-            sole = re.match(r'^(\d+)$', txt)
-            if sole:
-                min_s = int(sole.group(1))
-                return (min_s, max_s)
-            above = re.search(r'выше(\d+)', txt)
-            if above:
-                min_s = int(above.group(1))
-            below = re.search(r'ниже(\d+)', txt)
-            if below:
-                max_s = int(below.group(1))
-            between = re.search(r'(\d+)-(\d+)', txt)
-            if between:
-                min_s = int(between.group(1))
-                max_s = int(between.group(2))
-        return (min_s, max_s)
+# -------------------------- 新增：尺寸范围筛选工具函数（移到这里了！） --------------------------
+def get_size_range(text, lang="zh"):
+    txt = text.lower().replace(" ", "")
+    min_s = None
+    max_s = None
+    # 中文尺寸解析
+    if lang == "zh":
+        sole = re.match(r'^(\d+)尺$', txt)
+        if sole:
+            min_s = int(sole.group(1))
+            return (min_s, max_s)
+        above = re.search(r'(\d+)尺以上', txt)
+        if above:
+            min_s = int(above.group(1))
+        below = re.search(r'(\d+)尺以下', txt)
+        if below:
+            max_s = int(below.group(1))
+        between = re.search(r'(\d+)-(\d+)尺', txt)
+        if between:
+            min_s = int(between.group(1))
+            max_s = int(between.group(2))
+    # 英文尺寸解析
+    elif lang == "en":
+        txt = txt.replace("ft", "")
+        sole = re.match(r'^(\d+)$', txt)
+        if sole:
+            min_s = int(sole.group(1))
+            return (min_s, max_s)
+        above = re.search(r'above(\d+)', txt)
+        if above:
+            min_s = int(above.group(1))
+        below = re.search(r'below(\d+)', txt)
+        if below:
+            max_s = int(below.group(1))
+        between = re.search(r'(\d+)-(\d+)', txt)
+        if between:
+            min_s = int(between.group(1))
+            max_s = int(between.group(2))
+    # 俄语尺寸解析
+    elif lang == "ru":
+        txt = txt.replace("футов", "")
+        sole = re.match(r'^(\d+)$', txt)
+        if sole:
+            min_s = int(sole.group(1))
+            return (min_s, max_s)
+        above = re.search(r'выше(\d+)', txt)
+        if above:
+            min_s = int(above.group(1))
+        below = re.search(r'ниже(\d+)', txt)
+        if below:
+            max_s = int(below.group(1))
+        between = re.search(r'(\d+)-(\d+)', txt)
+        if between:
+            min_s = int(between.group(1))
+            max_s = int(between.group(2))
+    return (min_s, max_s)
+def filter_by_size(yachts, min_s, max_s):
+    out = []
+    for y in yachts:
+        s = y["size"]
+        if min_s is not None and s < min_s:
+            continue
+        if max_s is not None and s > max_s:
+            continue
+        out.append(y)
+    return out
 
-    def filter_by_size(yachts, min_s, max_s):
-        out = []
-        for y in yachts:
-            s = y["size"]
-            if min_s is not None and s < min_s:
-                continue
-            if max_s is not None and s > max_s:
-                continue
-            out.append(y)
-        return out
+# 原来的价格筛选函数，现在里面没有那两个小函数了
+def filter_by_price(yachts, min_p, max_p):
     out = []
     for y in yachts:
         p = y["price"]
