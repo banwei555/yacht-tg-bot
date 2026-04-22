@@ -241,7 +241,7 @@ TYPE_MAP = {
 
 # -------------------------- 工具函数 --------------------------
 def get_size(text):
-    match = re.search(r'(\d+)', text)
+    match = re.search(r'(\d+)\s*(尺|ft|футов)', text, re.IGNORECASE)
     return int(match.group(1)) if match else None
 
 
@@ -312,12 +312,10 @@ def get_price_range(text, lang="zh"):
     return (None, None)
 
 
-# -------------------------- 新增：尺寸范围筛选工具函数（移到这里了！） --------------------------
 def get_size_range(text, lang="zh"):
     txt = text.lower().replace(" ", "")
     min_s = None
     max_s = None
-    # 中文尺寸解析
     if lang == "zh":
         sole = re.match(r'^(\d+)尺$', txt)
         if sole:
@@ -333,7 +331,6 @@ def get_size_range(text, lang="zh"):
         if between:
             min_s = int(between.group(1))
             max_s = int(between.group(2))
-    # 英文尺寸解析
     elif lang == "en":
         txt = txt.replace("ft", "")
         sole = re.match(r'^(\d+)$', txt)
@@ -350,7 +347,6 @@ def get_size_range(text, lang="zh"):
         if between:
             min_s = int(between.group(1))
             max_s = int(between.group(2))
-    # 俄语尺寸解析
     elif lang == "ru":
         txt = txt.replace("футов", "")
         sole = re.match(r'^(\d+)$', txt)
@@ -368,6 +364,8 @@ def get_size_range(text, lang="zh"):
             min_s = int(between.group(1))
             max_s = int(between.group(2))
     return (min_s, max_s)
+
+
 def filter_by_size(yachts, min_s, max_s):
     out = []
     for y in yachts:
@@ -379,7 +377,7 @@ def filter_by_size(yachts, min_s, max_s):
         out.append(y)
     return out
 
-# 原来的价格筛选函数，现在里面没有那两个小函数了
+
 def filter_by_price(yachts, min_p, max_p):
     out = []
     for y in yachts:
